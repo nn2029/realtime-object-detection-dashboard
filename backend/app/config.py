@@ -30,6 +30,8 @@ class AppSettings:
     max_history: int = 120
     mock_max_objects: int = 4
     target_fps: float = 8.0
+    max_connections: int = 12
+    max_frame_pixels: int = 1280 * 720
 
     @classmethod
     def from_env(cls) -> "AppSettings":
@@ -46,6 +48,8 @@ class AppSettings:
             max_history=_as_int("METRICS_HISTORY", 120),
             mock_max_objects=_as_int("MOCK_MAX_OBJECTS", 4),
             target_fps=_as_float("TARGET_FPS", 8.0),
+            max_connections=_as_int("MAX_CONNECTIONS", 12),
+            max_frame_pixels=_as_int("MAX_FRAME_PIXELS", 1280 * 720),
         )
 
     def public_dict(self) -> dict[str, object]:
@@ -53,5 +57,7 @@ class AppSettings:
             "detectorMode": self.detector_mode,
             "targetFps": self.target_fps,
             "maxHistory": self.max_history,
+            "maxConnections": self.max_connections,
+            "maxFramePixels": self.max_frame_pixels,
             "corsOrigins": list(self.cors_origins),
         }

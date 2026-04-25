@@ -61,6 +61,12 @@ function App() {
         return;
       }
 
+      if (message.type === "throttled") {
+        inFlightRef.current = false;
+        setMetrics(message.payload?.metrics ?? emptyMetrics);
+        return;
+      }
+
       if (message.type === "detections") {
         const payload = message.payload as DetectionResult;
         inFlightRef.current = false;

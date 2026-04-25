@@ -20,12 +20,24 @@ class FrameProcessor:
     frames are skipped in favor of the latest view of the camera feed.
     """
 
-    def __init__(self, detector: Detector, metrics: StreamingMetrics | None = None) -> None:
+    def __init__(
+        self,
+        detector: Detector,
+        metrics: StreamingMetrics | None = None,
+        max_frame_pixels: int = 1280 * 720,
+    ) -> None:
         self.detector = detector
         self.metrics = metrics or StreamingMetrics()
+        self.max_frame_pixels = max(1, max_frame_pixels)
 
     def process_client_frame(self, message: dict[str, Any]) -> FrameResult:
         frame = FramePayload.from_client_message(message)
+        frame_pixels = frame.width * frame.height
+        if frame_pixels > self.max_frame_pixels:
+            raise ValueError(
+                f"Frame is {frame_pixels} pixels, above the {self.max_frame_pixels} pixel limit."
+            )
+
         timestamp = frame.timestamp or time.time()
         started_at = time.perf_counter()
         detections = self.detector.detect(frame)

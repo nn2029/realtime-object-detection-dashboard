@@ -23,7 +23,7 @@ class Detection:
 
     The bounding box uses relative coordinates `(x, y, width, height)` in the
     range 0..1, which lets the frontend draw detections over webcam video,
-    uploaded video, or synthetic demo frames without knowing source pixels.
+    uploaded video, or generated frames without knowing source pixels.
     """
 
     label: str

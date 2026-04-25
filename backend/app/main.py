@@ -17,7 +17,11 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     settings = settings or AppSettings.from_env()
     detector = create_detector(settings)
     metrics = StreamingMetrics(max_history=settings.max_history)
-    processor = FrameProcessor(detector=detector, metrics=metrics)
+    processor = FrameProcessor(
+        detector=detector,
+        metrics=metrics,
+        max_frame_pixels=settings.max_frame_pixels,
+    )
 
     app = FastAPI(
         title="Real-Time Object Detection Dashboard API",
@@ -32,7 +36,13 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(create_api_router(settings=settings, processor=processor), prefix="/api")
-    app.include_router(create_stream_router(processor=processor))
+    app.include_router(
+        create_stream_router(
+            processor=processor,
+            max_connections=settings.max_connections,
+            target_fps=settings.target_fps,
+        )
+    )
     app.state.processor = processor
     app.state.settings = settings
     return app

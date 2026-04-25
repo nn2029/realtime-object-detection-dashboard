@@ -2,7 +2,7 @@
 
 Webcam/video object detection dashboard with a FastAPI WebSocket backend, YOLO-ready detector abstraction, deterministic mock inference, canvas bounding boxes, and live detection analytics.
 
-This project is designed as a portfolio bridge between robotics/computer vision systems and deployed web applications. It runs reliably in mock mode without model weights, then can be switched to YOLOv8 when `ultralytics`, `opencv-python`, and local weights are available.
+It runs reliably in mock mode without model weights, then can be switched to YOLOv8 when `ultralytics`, `opencv-python`, and local weights are available.
 
 ## Architecture
 
@@ -12,7 +12,8 @@ flowchart LR
   Capture["Webcam or Demo Frame Capture"]
   Canvas["Canvas Bounding Box Overlay"]
   WS["WebSocket /ws/detect"]
-  Processor["FrameProcessor Backpressure Loop"]
+  Gate["Connection + FPS Gates"]
+  Processor["FrameProcessor"]
   Detector{"Detector Interface"}
   Mock["Deterministic MockDetector"]
   YOLO["Optional YOLOv8 Adapter"]
@@ -21,7 +22,8 @@ flowchart LR
 
   Browser --> Capture
   Capture --> WS
-  WS --> Processor
+  WS --> Gate
+  Gate --> Processor
   Processor --> Detector
   Detector --> Mock
   Detector --> YOLO
@@ -123,4 +125,6 @@ python3 -m unittest discover -s tests
 
 The browser sends one frame and waits for a detection response before sending another eligible frame. That acknowledgement loop is the main backpressure mechanism: it keeps the server from accumulating stale frames when inference slows down. For real robotics deployments, this freshness-first pattern is usually preferable to processing every captured frame after it is already old.
 
-The mock detector exists for portfolio and demo reliability. It produces deterministic YOLO-shaped detections, so reviewers can see the WebSocket stream, bounding boxes, analytics, and event panel even without GPU drivers, camera permission, OpenCV wheels, or model weights.
+The backend also enforces `MAX_CONNECTIONS`, `TARGET_FPS`, and `MAX_FRAME_PIXELS`. Those limits are deliberately boring and important: they stop one browser tab or oversized camera frame from consuming the whole inference worker.
+
+The mock detector produces deterministic YOLO-shaped detections, so the WebSocket stream, bounding boxes, analytics, and event panel stay reviewable even without GPU drivers, camera permission, OpenCV wheels, or model weights.
