@@ -1,0 +1,20 @@
+[project]
+name = "realtime-object-detection-dashboard-backend"
+version = "0.1.0"
+description = "FastAPI WebSocket backend for a real-time object detection dashboard"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110,<1.0",
+  "uvicorn[standard]>=0.27,<1.0",
+]
+
+[project.optional-dependencies]
+yolo = [
+  "ultralytics>=8.1",
+  "opencv-python>=4.9",
+  "numpy>=1.26",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

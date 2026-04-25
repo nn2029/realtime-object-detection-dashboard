@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DETECTOR_MODE: ${DETECTOR_MODE:-mock}
+      YOLO_WEIGHTS: ${YOLO_WEIGHTS:-./weights/yolov8n.pt}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      METRICS_HISTORY: ${METRICS_HISTORY:-120}
+      MOCK_MAX_OBJECTS: ${MOCK_MAX_OBJECTS:-4}
+      TARGET_FPS: ${TARGET_FPS:-8}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./weights:/app/weights:ro
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_STREAM_URL: ${VITE_STREAM_URL:-ws://localhost:8000/ws/detect}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

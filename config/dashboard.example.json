@@ -1,0 +1,15 @@
+{
+  "backend": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "detectorMode": "mock",
+    "yoloWeights": "./weights/yolov8n.pt",
+    "targetFps": 8,
+    "metricsHistory": 120
+  },
+  "frontend": {
+    "port": 5173,
+    "streamUrl": "ws://localhost:8000/ws/detect",
+    "defaultSource": "demo"
+  }
+}
